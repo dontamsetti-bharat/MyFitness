@@ -10,7 +10,7 @@ A personal, offline-first workout planner and tracker for Android. It is a Progr
 - Exercise library with category, muscle-group, equipment and difficulty filters
 - Exercise detail screens with setup instructions, targeted muscles and safety tips
 - Edit built-in exercises and add/edit/delete custom exercises
-- Attach an image or animated GIF to an exercise; uploaded media is stored locally for offline use
+- Attach multiple images, animated GIFs and short MP4/WebM videos to an exercise; media is stored in IndexedDB for offline use
 - Export and import a JSON backup
 - PWA service-worker caching and GitHub Pages deployment workflow
 
@@ -27,6 +27,19 @@ This project is configured for the repository name `MyFitness`. If you rename th
 Requires Node.js 20 or later: `npm install`, then `npm run dev`. Android Studio is not needed.
 
 ## Data and offline behaviour
-All plans, exercises (including attached image/GIF data) and history are stored in browser `localStorage` on this device. Image/GIF uploads are limited to 3 MB per file; browser storage limits still apply, so use a modest number of optimized media files and export a JSON backup regularly. This app does not send them to a server. Clearing Chrome site data or changing browser profiles can erase them, so export a JSON backup regularly. The first hosted visit requires internet; after the app shell has been cached, it can reopen offline.
+Plans, exercise details and history are stored in browser `localStorage`; exercise photos, GIFs and videos are stored separately in IndexedDB. Media files are limited to 50 MB each, subject to the browser's available storage quota. This app does not send them to a server. Clearing Chrome site data or changing browser profiles can erase them, so export a backup regularly. The first hosted visit requires internet; after the app shell has been cached, it can reopen offline.
 
 No Galaxy Watch/Samsung Health integration, cloud sync, account, automatic exercise detection or medical functionality is included. Routine content is guidance only; stop if you feel pain, dizziness or unusual symptoms. Secure the door anchor on a sturdy closed door and follow its manufacturer's instructions.
+
+
+## Exercise media storage (v1.2)
+
+Exercise photos, animated GIFs and short MP4/WebM demonstrations are stored as binary `Blob` records in the browser's IndexedDB database (`myfitness-media-db`). Exercise records in localStorage keep only media IDs and descriptive exercise data. The app requests persistent browser storage when supported.
+
+- Multiple media files can be attached to an exercise.
+- Each uploaded file is limited to 50 MB; actual browser quota depends on device/browser storage.
+- Export creates a JSON backup that includes media data; large libraries can produce large backup files.
+- Restore imports media and reconnects it to exercises.
+- Existing Base64 exercise images are migrated into IndexedDB at startup.
+- Data remains local to the browser profile and does not sync between devices.
+- Clearing browser site data can delete the app's local database. Export backups regularly.
